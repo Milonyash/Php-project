@@ -1,0 +1,47 @@
+$stud_sql = sprintf("SELECT Student_id, Surname, Name, Middlename, Is_leader FROM Student WHERE Group_id IN (SELECT Group_id FROM Group WHERE Number LIKE '%s') AND Course_id IN (SELECT Course_id FROM Course WHERE Number = '%s' AND Type LIKE '%s'))",
+    mysql_real_escape_string($group),
+    mysql_real_escape_string($course),
+    mysql_real_escape_string($type));
+
+
+//выполняем запрос
+
+$result1 = mysql_query($stud_sql);
+
+
+//проверяем результат(это в основном для отладки)
+
+if (!$result1) {
+    $message  = 'Неверный запрос: ' . mysql_error() . "\n";
+    $message .= 'Запрос целиком: ' . $query;
+    die($message);
+}
+
+while ($row = mysql_fetch_assoc($result1)) {
+    $stud_id_res = $row['student_id']; 
+    echo $row['surname'];
+    echo $row['name'];
+    echo $row['middlename'];
+    echo $row['is_leader'];
+}
+
+$quiz_sql = sprintf($res_sql = "SELECT quiz_data FROM quiz WHERE  Subj_id IN (SELECT subject_id FROM Subject WHERE Name LIKE '%s') AND Stud_id = '%s')",
+    mysql_real_escape_string($subj),
+    mysql_real_escape_string($stud_id_res));
+
+
+$result2 = mysql_query($quiz_sql);
+
+if (!$result2) {
+    $message  = 'Неверный запрос: ' . mysql_error() . "\n";
+    $message .= 'Запрос целиком: ' . $query;
+    die($message);
+}
+
+while ($row2 = mysql_fetch_assoc($result2)) {
+    echo $row2['quiz_data'];
+}
+
+
+mysql_free_result($result1);
+mysql_free_result($result2);
